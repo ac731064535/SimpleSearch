@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>testInp</title>
+    <style>
+        input{
+            width: 70%;
+        }
+        ul{
+
+            margin-top: 0;
+            margin-right: 29%;
+            border: darkgray solid thin;
+            padding: 0 0 0 0;
+            position: absolute;
+            left: 75px;
+            top: 58px;
+            width: 247px;
+            /*background: #fff0f0;*/
+        }
+        li{
+            list-style-type: none;
+            padding-left: 8px;
+
+        }
+        .inp{
+            position: relative;
+            -webkit-border-radius: 5px;
+            border-radius: 5px;
+            -moz-border-radius: 5px;
+            background-clip: padding-box;
+            margin: 180px auto;
+            width: 350px;
+            height: 180px;
+            padding: 35px 75px 15px 75px;
+            background: #fff;
+            border: 1px solid #eaeaea;
+            box-shadow: 0 0 25px #cac6c6;
+        }
+        .selected{
+            background: #f0f0f0;
+        }
+        .unselect{
+            background: #fff0f0;
+
+        }
+
+    </style>
+</head>
+<body>
+<div class="inp">
+    <input id="inp" type="text"><button style="background: DodgerBlue;width: 28%">点击搜索</button><br>
+</div>
+
+<script>
+    var sData = ["java","javascript","js","php","python","c++"];
+    var keyc = 0;
+    var liIndex = -1;
+    var setIntValue = '';
+
+    var div = document.getElementsByTagName('div')[0];
+    var inputT = document.getElementById("inp");
+    var ul = '';
+
+    inputT.addEventListener('keydown',function (e) {
+
+        keyc = e.keyCode;
+
+        for(let li of ul.children){
+            li.removeAttribute('class');
+        }
+
+        if(keyc === 13){
+            inputT.value = setIntValue;
+            ul.parentNode.removeChild(ul);
+        }
+
+        if(keyc === 40){
+            liIndex += 1;
+            if(liIndex > ul.children.length-1){
+                liIndex = 0;
+            }
+            console.log(ul.children[liIndex]);
+            ul.children[liIndex].setAttribute('class','selected');
+            setIntValue = ul.children[liIndex].innerText;
+        } else if(keyc === 38){
+            liIndex -= 1;
+            if(liIndex < 0){
+                liIndex = ul.children.length-1;
+            }
+            console.log(ul.children[liIndex]);
+            ul.children[liIndex].setAttribute('class','selected');
+            setIntValue = ul.children[liIndex].innerText;
+        }
+
+    });
+
+    inputT.addEventListener('input', function(){
+        //判断如果没有ul，就执行添加
+        if(div.getElementsByTagName('ul').length === 0){
+            ul = document.createElement('ul');
+            ul.setAttribute('id','ul');
+            div.appendChild(ul);
+        }
+
+        var re = new RegExp("^" + inputT.value + "");
+        liIndex = -1;  //每次input更新，就重置指针
+
+        //清空ul
+        while(ul.firstChild){
+            ul.removeChild(ul.firstChild);
+        }
+
+        for(let i = 0; i < sData.length; i++){
+            if(inputT.value != '' && re.test(sData[i])){
+                let li = document.createElement("li");
+                li.innerText = sData[i];//4.
+                ul.appendChild(li);
+
+            }
+        }
+        //事件委托，为ul下面的子节点提供委托事件，e.target指向被点击的节点
+        ul.addEventListener('click',function(e){
+            var tar = e.target;
+            inputT.value = tar.innerText;
+        })
+    })
+</script>
+</body>
+</html>
