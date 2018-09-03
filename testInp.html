@@ -5,7 +5,11 @@
     <title>testInp</title>
     <style>
         input{
-            width: 70%;
+            width: 300px;
+        }
+        body{
+            text-align: center;
+            position: relative;
         }
         ul{
 
@@ -14,29 +18,12 @@
             border: darkgray solid thin;
             padding: 0 0 0 0;
             position: absolute;
-            left: 75px;
-            top: 58px;
-            width: 247px;
             /*background: #fff0f0;*/
         }
         li{
             list-style-type: none;
             padding-left: 8px;
 
-        }
-        .inp{
-            position: relative;
-            -webkit-border-radius: 5px;
-            border-radius: 5px;
-            -moz-border-radius: 5px;
-            background-clip: padding-box;
-            margin: 180px auto;
-            width: 350px;
-            height: 180px;
-            padding: 35px 75px 15px 75px;
-            background: #fff;
-            border: 1px solid #eaeaea;
-            box-shadow: 0 0 25px #cac6c6;
         }
         .selected{
             background: #f0f0f0;
@@ -49,87 +36,163 @@
     </style>
 </head>
 <body>
-<div class="inp">
-    <input id="inp" type="text"><button style="background: DodgerBlue;width: 28%">点击搜索</button><br>
-</div>
-
+book
+<input id="input1" class="book" type="text">
+<input id="input2" class="book" type="text">
 <script>
-    var sData = ["java","javascript","js","php","python","c++"];
-    var keyc = 0;
-    var liIndex = -1;
-    var setIntValue = '';
+//    var input = document.getElementById("input1");
+    var sData = ["java", "javascript", "js", "php", "python", "c++"];
 
-    var div = document.getElementsByTagName('div')[0];
-    var inputT = document.getElementById("inp");
-    var ul = '';
+    var createInp = new AutoComplete('#input1', sData);
+    var createInp2 = new AutoComplete('#input2', sData);
 
-    inputT.addEventListener('keydown',function (e) {
+//    var AutoComplete = function (input, data) {
+//
+//        var inputT = input
+//
+//        return {
+//            init: function () {
+//                inputT.addEventListener()
+//            }
+//        }
+//    }
+//
+//    var c =AutoComplete('','')
+//    c.init()
 
-        keyc = e.keyCode;
+    function AutoComplete(input, Data) {
+        var _this = this;
+        this.inputT = document.querySelector(input);
+        this.sData = Data;
 
-        if(ul != ''){
-            for(let li of ul.children){
-            li.removeAttribute('class');
-            }
+        this.init = function () {
+            this.inputT.addEventListener('input', onInputChange);
+            this.inputT.addEventListener('keydown', onKeyDownChange(e));
         }
 
-        if(inputT.value != ""){
-            if(keyc === 13){
-                inputT.value = setIntValue;
-                ul.parentNode.removeChild(ul);
+        function onInputChange(){
+            //判断如果没有ul，就执行添加
+            if (!ul) {
+                ul = document.createElement('ul');
+                ul.style.left = _this.inputT.offsetLeft + 'px';
+                ul.style.top = _this.inputT.offsetTop + _this.inputT.offsetHeight + 'px';
+                ul.style.width = _this.inputT.clientWidth + 'px';
+                document.body.appendChild(ul);
+
+                console.log(_this.inputT.style);//此时尚未加载样式表里的样式，所以style里面没数据
+                //事件委托，为ul下面的子节点提供委托事件，e.target指向被点击的节点
+                ul.addEventListener('click', function (e) {
+                    var tar = e.target;
+                    _this.inputT.value = tar.innerText;
+                })
             }
 
-            if(keyc === 40){
-                liIndex += 1;
-                if(liIndex > ul.children.length-1){
-                    liIndex = 0;
+            var re = new RegExp("^" + _this.inputT.value + "");
+            liIndex = -1;  //每次input更新，就重置指针
+
+            //清空ul
+            while (ul.firstChild) {
+                ul.removeChild(ul.firstChild);
+            }
+
+            for (let i = 0; i < _this.sData.length; i++) {
+                if (_this.inputT.value != '' && re.test(_this.sData[i])) {
+                    let li = document.createElement("li");
+                    li.innerText = _this.sData[i];//4.
+                    ul.appendChild(li);
+
                 }
-                console.log(ul.children[liIndex]);
-                ul.children[liIndex].setAttribute('class','selected');
-                setIntValue = ul.children[liIndex].innerText;
-            }else if(keyc === 38){
-                liIndex -= 1;
-                if(liIndex < 0){
-                liIndex = ul.children.length-1;
+            }
+        }
+
+        function onKeyDownChange(e) {
+
+        }
+
+        this.addInput = function () {
+            var keyc = 0;
+            var liIndex = -1;
+            var setIntValue = '';
+
+//        var inputT = document.getElementById("inp");
+            var ul = '';
+            this.inputT.addEventListener('keydown', function (e) {
+
+                keyc = e.keyCode;
+
+                if (ul) {
+                    for (let li of ul.children) {
+                        li.removeAttribute('class');
+                    }
                 }
-                console.log(ul.children[liIndex]);
-                ul.children[liIndex].setAttribute('class','selected');
-                setIntValue = ul.children[liIndex].innerText;
-            }
+                console.log(_this.inputT);
+                if (_this.inputT.value) {
+                    if (keyc === 13) {
+                        _this.inputT.value = setIntValue;
+                        ul.parentNode.removeChild(ul);
+                        ul = null
+                    }
+
+                    if (keyc === 40) {
+                        liIndex += 1;
+                        if (liIndex > ul.children.length - 1) {
+                            liIndex = 0;
+                        }
+                        console.log(ul.children[liIndex]);
+                        ul.children[liIndex].setAttribute('class', 'selected');
+                        setIntValue = ul.children[liIndex].innerText;
+                    } else if (keyc === 38) {
+                        liIndex -= 1;
+                        if (liIndex < 0) {
+                            liIndex = ul.children.length - 1;
+                        }
+                        console.log(ul.children[liIndex]);
+                        ul.children[liIndex].setAttribute('class', 'selected');
+                        setIntValue = ul.children[liIndex].innerText;
+                    }
+                }
+
+            });
+
+            this.inputT.addEventListener('input', function () {
+                //判断如果没有ul，就执行添加
+                if (!ul) {
+                    ul = document.createElement('ul');
+                    ul.style.left = _this.inputT.offsetLeft + 'px';
+                    ul.style.top = _this.inputT.offsetTop + _this.inputT.offsetHeight + 'px';
+                    ul.style.width = _this.inputT.clientWidth + 'px';
+                    document.body.appendChild(ul);
+
+                    console.log(_this.inputT.style);//此时尚未加载样式表里的样式，所以style里面没数据
+                    //事件委托，为ul下面的子节点提供委托事件，e.target指向被点击的节点
+                    ul.addEventListener('click', function (e) {
+                        var tar = e.target;
+                        _this.inputT.value = tar.innerText;
+                    })
+                }
+
+                var re = new RegExp("^" + _this.inputT.value + "");
+                liIndex = -1;  //每次input更新，就重置指针
+
+                //清空ul
+                while (ul.firstChild) {
+                    ul.removeChild(ul.firstChild);
+                }
+
+                for (let i = 0; i < _this.sData.length; i++) {
+                    if (_this.inputT.value != '' && re.test(_this.sData[i])) {
+                        let li = document.createElement("li");
+                        li.innerText = _this.sData[i];//4.
+                        ul.appendChild(li);
+
+                    }
+                }
+            })
+
         }
 
-    });
-
-    inputT.addEventListener('input', function(){
-        //判断如果没有ul，就执行添加
-        if(div.getElementsByTagName('ul').length === 0){
-            ul = document.createElement('ul');
-            ul.setAttribute('id','ul');
-            div.appendChild(ul);
-            //事件委托，为ul下面的子节点提供委托事件，e.target指向被点击的节点
-            ul.addEventListener('click',function(e){
-                var tar = e.target;
-                inputT.value = tar.innerText;
-        })
-        }
-
-        var re = new RegExp("^" + inputT.value + "");
-        liIndex = -1;  //每次input更新，就重置指针
-
-        //清空ul
-        while(ul.firstChild){
-            ul.removeChild(ul.firstChild);
-        }
-
-        for(let i = 0; i < sData.length; i++){
-            if(inputT.value != '' && re.test(sData[i])){
-                let li = document.createElement("li");
-                li.innerText = sData[i];//4.
-                ul.appendChild(li);
-
-            }
-        }
-    })
+        this.addInput();
+    }
 </script>
 </body>
 </html>
