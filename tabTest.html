@@ -38,10 +38,10 @@
             vertical-align: top;
         }
         .selected{
-        	background: #f0f0f0;
+            background: #f0f0f0;
         }
         .unselected{
-        	background: #fff0f0;
+            background: #fff0f0;
         }
     </style>
 </head>
@@ -53,6 +53,7 @@
                 <li>tab2</li>
                 <li>tab3</li>
             </ul>
+            <button type="button">指定选项卡3</button>
         </div>
         <div class="tabcontent">
             <div>conten1</div>
@@ -61,37 +62,48 @@
         </div>
     </div>
     <div id="tab2" class="tab">
-    	<div class ="tablist tabli">
-    		<div>tab1</div>
-    		<div>tab2</div>
-    		<div>tab3</div>
-    	</div>
-    	<div class="tabcontent">
+        <div class ="tablist tabli">
+            <div>tab1</div>
+            <div>tab2</div>
+            <div>tab3</div>
+        </div>
+        <div class="tabcontent">
             <div>content1</div>
             <div>content2</div>
             <div>content3</div>
-    	</div>
+        </div>
     </div>
     <script type="text/javascript">
-    	var options = {
-    		dom: '#tab2 .tablist div',
-    		content: '#tab2 .tabcontent > div',
-    		defaultSelected: 1,
-    		event: 'click',
+        var options = {
+            dom: '#tab2 .tablist div',
+            content: '#tab2 .tabcontent > div',
+            defaultSelected: 1,
+            event: 'mouseover',
             selected: 'selected',
-    		callback: function(tabIndex){
-    			alert(tabIndex + ' selected');
-    		}
-    	}
+            callback: function(tabIndex){
+                alert(tabIndex + ' selected');
+            }
+        };
+        const DEFAULTS = {
+            defaultSelected: 0,
+            event: 'click'
+        }
 
-    	new Tab(options);
+        var tab = new Tab(options);
 
+        document.querySelectorAll('#tab1 .tablist button')[0].addEventListener('click',function(){
+            tab.showContent(2);
+            options.callback(2);
+        })
         function Tab(options){
+            options = Object.assign({},DEFAULTS,options);
+            console.log(options);
 
             var tabList = document.querySelectorAll(options.dom);
             var contentList = document.querySelectorAll(options.content);
             var timer = '';
             var lastTabIndex = 0;
+            var _this = this;
 
             //为Tab绑定索引
             for(let i = 0; i < tabList.length; i++){
@@ -103,12 +115,12 @@
                 content.style.display = 'none';
             }
 
-        	console.log('events',tabList[1].index,contentList);
+            console.log('events',tabList[1].index,contentList);
 
-        	this.init = function(){
-        		showContent(options.defaultSelected);
-        		checkEvent(options.event);
-        	}
+            this.init = function(){
+                this.showContent(options.defaultSelected);
+                checkEvent(options.event);
+            }
 
             function checkEvent(e){
                 if(e == 'click'){
@@ -122,7 +134,7 @@
                 tabList[0].parentNode.addEventListener('click',function(e){
                     var tar = e.target;
 
-                    showContent(tar.index);
+                    _this.showContent(tar.index);
                     options.callback(tar.index);
                 })
             }
@@ -132,7 +144,8 @@
                 tabList[0].parentNode.addEventListener('mouseover',function(e){
                     timer = setTimeout(function(){
                         var tar = e.target;
-                        showContent(tar.index);
+                        _this.showContent(tar.index);
+                        options.callback(tar.index);
                     },2000)
                 });
                 tabList[0].parentNode.addEventListener('mouseout',function(){
@@ -141,16 +154,16 @@
 
             }
 
-            function showContent(tabIndex){
+            this.showContent = function(tabIndex){
                 tabList[lastTabIndex].removeAttribute('class');
                 tabList[tabIndex].setAttribute('class',options.selected);
                 contentList[lastTabIndex].style.display = 'none';
-                contentList[tabIndex].style.display = 'inline';
+                contentList[tabIndex].style.display = 'block';
 
                 lastTabIndex = tabIndex;
             }
 
-        	this.init();
+            this.init();
         }
     </script>
 </body>
