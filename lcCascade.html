@@ -33,7 +33,7 @@
 <script>
 	var llocation = llocation;
 
-	LcCascader('div.cascader',llocation);
+	new LcCascader('div.cascader',llocation);
 
 	function LcCascader(div,data){
 		this.data = data;
@@ -69,8 +69,6 @@
             input.addEventListener('click',function(){
                 //传递数据和第一级ul
                 dataSeparation(_this.data, _this.div.getElementsByTagName('ul')[0]);
-                console.log('data==',_this.data);
-
             })
         }
 
@@ -101,7 +99,7 @@
                 tarIndex1 = tarIndex;
                 data = this.data[tarIndex1].children;
                 ul = ulList[1];
-                dataSeparation(data,ul);
+                dataSeparation(data,ul); 
                 this.resLocation[0] = this.data[tarIndex1].name;
             }else if(ulIndex == 1){
                 tarIndex2 = tarIndex;
