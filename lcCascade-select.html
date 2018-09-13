@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        div.cascader{
+        	position: relative;
+        	/*background: red*/
+        }
+        input{
+        	display: block;
+        }
+    	ul{
+    		float: left;
+    		width: 200px;
+    		border: 1px solid #ccc;
+    		margin-top: 0px;
+    		/*display: none;*/
+    	}
+    	li{
+    		width: 200px;
+    		overflow: hidden;
+    		text-align: left;
+    	}
+    	.selected{
+    		background: #f0f0f0;
+    	}
+    </style>
+</head>
+<body>
+	<div class="cascader">
+	</div>
+<script type="text/javascript" src="location.js"></script>
+<script>
+	var llocation = llocation;
+	new LcCascader('div.cascader',llocation);
+
+	function LcCascader(div,data) {
+        this.data = data;
+        //要注意把nodelist换成节点
+        this.div = document.querySelectorAll(div)[0];
+
+        this.selectList = this.div.getElementsByTagName('select');
+
+
+        this.selectLocation = function(selectIndex,data){
+        	var _this = this
+        	if(!data||data.length == 0){
+        		return
+        	}
+        	while(this.selectList.length > selectIndex){
+        		this.div.removeChild(this.selectList[this.selectList.length - 1]);
+        	}
+
+        	var selectP = document.createElement('select');
+        	this.div.appendChild(selectP);
+
+        	selectP.addEventListener('change',function(){
+        		_this.selectLocation(selectIndex + 1,data[selectP.selectedIndex].children)
+        	})
+
+        	for(let i = 0; i < data.length; i++){
+        		selectP.add(new Option(data[i].name,i));
+        	}
+        }
+        this.selectLocation(0,data);
+
+    }
+</script>
+</body>
+</html>
