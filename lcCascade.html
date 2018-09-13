@@ -60,19 +60,20 @@
 		}
 
 		this.init = function(){
-			clickInput(input);
-		    clickUl(this.div);
+			this.clickInput(input);
+		    this.clickUl(this.div);
 
 		}
-        function clickInput(input){
+        this.clickInput = function(input){
             var _this = this;
+            console.log(this);
             input.addEventListener('click',function(){
                 //传递数据和第一级ul
                 dataSeparation(_this.data, _this.div.getElementsByTagName('ul')[0]);
             })
         }
 
-        function clickUl(div){
+        this.clickUl = function(div){
             var _this = this;
             //采用事件委托，将事件委托给div
             div.addEventListener('click',function(e){
@@ -80,14 +81,14 @@
                 if(tar.nodeName.toLowerCase() == 'li'){
                     let ul = tar.parentNode;
                     //将点击的li序号，及其父节点的序号传给函数判断
-                    judgeUl(tar.index,ul.index);
-                    setSelectAttr(tar.index,ul.index);
+                    _this.judgeUl(tar.index,ul.index);
+                    _this.setSelectAttr(tar.index,ul.index);
                 }
             })
         }
 
         //判断当前点击的li及ul
-        function judgeUl(tarIndex,ulIndex){
+        this.judgeUl  = function(tarIndex,ulIndex){
             var data,ul;
             var ulList = this.div.getElementsByTagName('ul');
 
@@ -135,7 +136,7 @@
         }
 
         //设置选择属性
-        function setSelectAttr(tarIndex, ulIndex){
+        this.setSelectAttr = function(tarIndex, ulIndex){
             var ulList = this.div.getElementsByTagName('ul');
             console.log('attr',ulList[0].children[0]);
 
