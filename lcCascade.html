@@ -6,20 +6,22 @@
     <style>
         div.cascader{
         	position: relative;
-        	text-align: center;
         	/*background: red*/
         }
+        input{
+        	display: block;
+        }
     	ul{
-    		position: absolute;
-    		top: 50px;
-    		display: inline;
-    		padding: 0;
-    		margin-top: 0;
-    		border: darkgray solid thin;
+    		float: left;
+    		width: 200px;
+    		border: 1px solid #ccc;
+    		margin-top: 0px;
+    		/*display: none;*/
     	}
     	li{
-    		list-style-type: none;
-            padding-left: 0px;
+    		width: 200px;
+    		overflow: hidden;
+    		text-align: left;
     	}
     	.selected{
     		background: #f0f0f0;
@@ -32,126 +34,83 @@
 <script type="text/javascript" src="location.js"></script>
 <script>
 	var llocation = llocation;
-
 	new LcCascader('div.cascader',llocation);
 
-	function LcCascader(div,data){
-		this.data = data;
-		this.div = document.querySelectorAll(div)[0];
-		this.resLocation = ['','',''];
+	function LcCascader(div,data) {
+        this.data = data;
+        //要注意把nodelist换成节点
+        this.div = document.querySelectorAll(div)[0];
+        this.ulList = this.div.getElementsByTagName('ul');
+        this.locationList = [];
 
-		var tarIndex1,
-		    tarIndex2,
-		    tarIndex3;
-		var lastUl0Index = 0;
-		var lastUl1Index = 0;
+        var _this = this;
+        var lastUl0Index = 0;
+        var lastUl1Index = 0;
 
-		var input = document.createElement('input');
-		this.div.appendChild(input);
+        var input = document.createElement('input');
+        this.div.appendChild(input);
 
-		for(let i = 0; i < 3; i++){
-			let ul = document.createElement('ul');
-			ul.index = i;
-			console.log(ul);
-			ul.style.width = 150 + 'px';
-			ul.style.top = input.offsetTop + input.offsetHeight + 'px';
-			ul.style.left = input.offsetLeft + 150*i + 'px';
-			this.div.appendChild(ul);
-		}
+        input.addEventListener('click', function () {
+            _this.clickUl(0, data);
+        })
 
-		this.init = function(){
-			this.clickInput(input);
-		    this.clickUl(this.div);
-
-		}
-        this.clickInput = function(input){
+        console.log(input);
+        
+        //重新实现，现在省级的地址也通过传入data再生成，之前先生成了省级的地址，导致想递归实现时，不知道怎样构造参数，下次被问题困住时，可以重新构思业务逻辑的执行顺序。
+        this.clickUl = function(ulIndex,data){
             var _this = this;
-            console.log(this);
-            input.addEventListener('click',function(){
-                //传递数据和第一级ul
-                dataSeparation(_this.data, _this.div.getElementsByTagName('ul')[0]);
-            })
-        }
-
-        this.clickUl = function(div){
-            var _this = this;
-            //采用事件委托，将事件委托给div
-            div.addEventListener('click',function(e){
+            var ul;
+            if(!data||data.length === 0){
+            	this.div.getElementsByTagName('input')[0].value = this.locationList.join('');
+            	for(let i = 0; i < ulIndex; i++){
+            		this.div.removeChild(this.div.lastChild);
+            	}
+                return;
+            }
+            while(this.ulList.length > ulIndex){
+                this.div.removeChild(this.ulList[this.ulList.length -1])
+            }
+            if(!this.ulList[ulIndex]){
+                ul = document.createElement('ul');
+                this.div.appendChild(ul);
+            }
+            ul.addEventListener('click',function(e){
                 var tar = e.target;
-                if(tar.nodeName.toLowerCase() == 'li'){
-                    let ul = tar.parentNode;
-                    //将点击的li序号，及其父节点的序号传给函数判断
-                    _this.judgeUl(tar.index,ul.index);
-                    _this.setSelectAttr(tar.index,ul.index);
+
+                if(tar.tagName == 'LI'){
+                    var item = data[tar.index];
+                    _this.setSelectAttr(tar.index,ulIndex);
+                    _this.locationList.splice(ulIndex + 1, _this.locationList.length);
+                    _this.locationList[ulIndex] = item.name;
+
+                    _this.clickUl(ulIndex + 1, item.children);
                 }
+
+            })
+
+            data.forEach((item, index) => {
+                var li = document.createElement('li');
+                li.index = index;
+                li.innerText = item.name;
+                ul.appendChild(li);
             })
         }
 
-        //判断当前点击的li及ul
-        this.judgeUl  = function(tarIndex,ulIndex){
-            var data,ul;
-            var ulList = this.div.getElementsByTagName('ul');
+        this.setSelectAttr = function(tarIndex,ulIndex){
+        	if(ulIndex == 0){
 
-            if(ulIndex == 0){
-                //当重新选择第一个ul时，把第三个ul清空
-                while(ulList[2].firstChild){
-                    ulList[2].removeChild(ulList[2].firstChild);
-                }
-                tarIndex1 = tarIndex;
-                data = this.data[tarIndex1].children;
-                ul = ulList[1];
-                dataSeparation(data,ul); 
-                this.resLocation[0] = this.data[tarIndex1].name;
-            }else if(ulIndex == 1){
-                tarIndex2 = tarIndex;
-                data = this.data[tarIndex1].children[tarIndex2].children;
-                ul = ulList[2];
-                dataSeparation(data,ul);
-                this.resLocation[1] = this.data[tarIndex1].children[tarIndex2].name;
-            }else if(ulIndex == 2){
-                this.resLocation[2] = this.data[tarIndex1].children[tarIndex2].children[tarIndex].name;
-                console.log(this.resLocation.join(''));
-                this.div.getElementsByTagName('input')[0].value = this.resLocation.join('');
-                for(let i = 0; i < 3; i++){
-                	while(ulList[i].firstChild){
-                		ulList[i].removeChild(ulList[i].firstChild);
-                	}
-                }
-            }
+        		this.ulList[0].children[lastUl0Index].removeAttribute('class');
+        		this.ulList[0].children[tarIndex].setAttribute('class','selected');
+        		lastUl0Index = tarIndex;
+        		lastUl1Index = 0;
+        	}else if(ulIndex == 1){
+        		this.ulList[1].children[lastUl1Index].removeAttribute('class');
+        		this.ulList[1].children[tarIndex].setAttribute('class','selected');
+        		lastUl1Index = tarIndex;
+        	}
 
         }
-        //由于每次点击li出现新的ul时，只需要数据和用于显示的ul，所以将data和ul作为参数。
-        function dataSeparation(data,ul){
-
-            while(ul.firstChild){
-                ul.removeChild(ul.firstChild);
-            }
-
-            for(let i = 0; i < data.length; i++){
-                let li = document.createElement('li');
-                li.innerText = data[i].name;
-                li.index = i;
-                ul.appendChild(li);
-            }
-        }
-
-        //设置选择属性
-        this.setSelectAttr = function(tarIndex, ulIndex){
-            var ulList = this.div.getElementsByTagName('ul');
-            console.log('attr',ulList[0].children[0]);
-
-            if(ulIndex == 0){
-                ulList[0].children[lastUl0Index].removeAttribute('class');
-                ulList[0].children[tarIndex].setAttribute('class','selected');
-                lastUl0Index = tarIndex;
-            }else if(ulIndex == 1){
-                ulList[1].children[lastUl1Index].removeAttribute('class');
-                ulList[1].children[tarIndex].setAttribute('class','selected');
-                lastUl1Index = tarIndex;
-            }
-        }
-        this.init();
-	}
+    }
 </script>
 </body>
 </html>
