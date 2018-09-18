@@ -8,24 +8,6 @@
         	position: relative;
         	/*background: red*/
         }
-        input{
-        	display: block;
-        }
-    	ul{
-    		float: left;
-    		width: 200px;
-    		border: 1px solid #ccc;
-    		margin-top: 0px;
-    		/*display: none;*/
-    	}
-    	li{
-    		width: 200px;
-    		overflow: hidden;
-    		text-align: left;
-    	}
-    	.selected{
-    		background: #f0f0f0;
-    	}
     </style>
 </head>
 <body>
@@ -57,12 +39,14 @@
         	this.div.appendChild(selectP);
 
         	selectP.addEventListener('change',function(){
+        		console.log(selectP.selectedIndex);
         		_this.selectLocation(selectIndex + 1,data[selectP.selectedIndex].children)
         	})
 
         	for(let i = 0; i < data.length; i++){
         		selectP.add(new Option(data[i].name,i));
         	}
+        	selectP.selectedIndex = -1;
         }
         this.selectLocation(0,data);
 
