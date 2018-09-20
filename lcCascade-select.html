@@ -16,17 +16,22 @@
 <script type="text/javascript" src="location.js"></script>
 <script>
 	var llocation = llocation;
-	new LcCascader('div.cascader',llocation);
+	var defaultLocation = ['广东省','广州市','天河区'];
+	new LcCascader('div.cascader',llocation,defaultLocation);
 
-	function LcCascader(div,data) {
+	function LcCascader(div,data,defaultLocation) {
         this.data = data;
         //要注意把nodelist换成节点
         this.div = document.querySelectorAll(div)[0];
 
         this.selectList = this.div.getElementsByTagName('select');
 
-
-        this.selectLocation = function(selectIndex,data){
+        this.init = function(){
+        	//添加一个默认参数调用函数，当发生点击事件时，把默认参数去掉再调用
+        	this.selectLocation(0,data,defaultLocation);
+        	// this.selectLocation(0,data);
+        }
+        this.selectLocation = function(selectIndex,data,defaultLocation){
         	var _this = this
         	if(!data||data.length == 0){
         		return
@@ -36,19 +41,30 @@
         	}
 
         	var selectP = document.createElement('select');
+        	// selectP.selectedIndex = -1;
         	this.div.appendChild(selectP);
 
         	selectP.addEventListener('change',function(){
-        		console.log(selectP.selectedIndex);
-        		_this.selectLocation(selectIndex + 1,data[selectP.selectedIndex].children)
+        		//去掉默认参数再调用
+        		_this.selectLocation(selectIndex + 1,data[selectP.selectedIndex].children);
         	})
 
         	for(let i = 0; i < data.length; i++){
         		selectP.add(new Option(data[i].name,i));
+        		if(defaultLocation != undefined){
+        			if(data[i].name == defaultLocation[selectIndex]){
+        				selectP.selectedIndex = i;
+        				this.selectLocation(selectIndex + 1, data[selectP.selectedIndex].children,defaultLocation);
+        			}
+        		}
         	}
-        	selectP.selectedIndex = -1;
+        	// console.log(defaultLocation);
+        	if(defaultLocation == undefined){
+        		selectP.selectedIndex = -1;
+        	}
         }
-        this.selectLocation(0,data);
+
+        this.init();
 
     }
 </script>
