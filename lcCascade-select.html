@@ -4,15 +4,27 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
+        body{
+        	position: relative;
+        }
         div.cascader{
         	position: relative;
+        	display: inline;
         	/*background: red*/
+        }
+        div.selectedL{
+        	position: absolute;
+        	left: 20%;
+        	display: inline-block;
+        }
+        i{
+        	display: block;
         }
     </style>
 </head>
 <body>
-	<div class="cascader">
-	</div>
+	<div class="cascader"></div>
+	<div class="selectedL"><h2>选择过的地址</h2></div>
 <script type="text/javascript" src="location.js"></script>
 <script>
 	var llocation = llocation;
@@ -23,8 +35,11 @@
         this.data = data;
         //要注意把nodelist换成节点
         this.div = document.querySelectorAll(div)[0];
+        this.selectDiv = document.querySelector('div.selectedL');
 
         this.selectList = this.div.getElementsByTagName('select');
+
+        this.lastLocation = [];
 
         this.init = function(){
         	//添加一个默认参数调用函数，当发生点击事件时，把默认参数去掉再调用
@@ -34,7 +49,12 @@
         this.selectLocation = function(selectIndex,data,defaultLocation){
         	var _this = this
         	if(!data||data.length == 0){
-        		return
+        		var i = document.createElement('i');
+        		var time = new Date();
+        		i.innerText = time.toLocaleTimeString() + '---' + this.lastLocation.join('');
+        		this.selectDiv.appendChild(i);
+        		console.log(this.lastLocation.join(''))
+;        		return
         	}
         	while(this.selectList.length > selectIndex){
         		this.div.removeChild(this.selectList[this.selectList.length - 1]);
@@ -46,6 +66,7 @@
 
         	selectP.addEventListener('change',function(){
         		//去掉默认参数再调用
+        		_this.lastLocation.splice(selectIndex,1,data[selectP.selectedIndex].name);
         		_this.selectLocation(selectIndex + 1,data[selectP.selectedIndex].children);
         	})
 
@@ -54,6 +75,7 @@
         		if(defaultLocation != undefined){
         			if(data[i].name == defaultLocation[selectIndex]){
         				selectP.selectedIndex = i;
+        				this.lastLocation.splice(selectIndex,1,data[i].name);
         				this.selectLocation(selectIndex + 1, data[selectP.selectedIndex].children,defaultLocation);
         			}
         		}
