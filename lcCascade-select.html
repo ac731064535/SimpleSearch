@@ -24,6 +24,7 @@
 </head>
 <body>
 	<div class="cascader"></div>
+    <div><button id="commit">提交</button></div>
 	<div class="selectedL"><h2>选择过的地址</h2></div>
 <script type="text/javascript" src="location.js"></script>
 <script>
@@ -32,10 +33,12 @@
 	new LcCascader('div.cascader',llocation,defaultLocation);
 
 	function LcCascader(div,data,defaultLocation) {
+        var _this = this;
         this.data = data;
         //要注意把nodelist换成节点
         this.div = document.querySelectorAll(div)[0];
         this.selectDiv = document.querySelector('div.selectedL');
+        this.button = document.getElementById('commit');
 
         this.selectList = this.div.getElementsByTagName('select');
 
@@ -49,11 +52,6 @@
         this.selectLocation = function(selectIndex,data,defaultLocation){
         	var _this = this
         	if(!data||data.length == 0){
-        		var i = document.createElement('i');
-        		var time = new Date();
-        		i.innerText = time.toLocaleTimeString() + '---' + this.lastLocation.join('');
-        		this.selectDiv.appendChild(i);
-        		console.log(this.lastLocation.join(''))
 ;        		return
         	}
         	while(this.selectList.length > selectIndex){
@@ -61,29 +59,37 @@
         	}
 
         	var selectP = document.createElement('select');
+            selectP.add(new Option('请选择'));
+            selectP.options[0].style.display='none';
         	// selectP.selectedIndex = -1;
         	this.div.appendChild(selectP);
 
         	selectP.addEventListener('change',function(){
         		//去掉默认参数再调用
-        		_this.lastLocation.splice(selectIndex,1,data[selectP.selectedIndex].name);
-        		_this.selectLocation(selectIndex + 1,data[selectP.selectedIndex].children);
+        		_this.lastLocation.splice(selectIndex,1,data[selectP.selectedIndex - 1].name);
+        		_this.selectLocation(selectIndex + 1,data[selectP.selectedIndex - 1].children);
         	})
 
         	for(let i = 0; i < data.length; i++){
         		selectP.add(new Option(data[i].name,i));
         		if(defaultLocation != undefined){
         			if(data[i].name == defaultLocation[selectIndex]){
-        				selectP.selectedIndex = i;
+        				selectP.selectedIndex = i+1;
         				this.lastLocation.splice(selectIndex,1,data[i].name);
-        				this.selectLocation(selectIndex + 1, data[selectP.selectedIndex].children,defaultLocation);
+        				this.selectLocation(selectIndex + 1, data[i].children,defaultLocation);
         			}
         		}
         	}
-        	// console.log(defaultLocation);
-        	if(defaultLocation == undefined){
-        		selectP.selectedIndex = -1;
-        	}
+        }
+
+        this.button.onclick = function(){
+            if(confirm("确认选择：" + _this.lastLocation.join('') + "?")){
+                var i = document.createElement('i');
+                var time = new Date();
+
+                i.innerText = time.toLocaleTimeString() + '---' + _this.lastLocation.join('');
+                _this.selectDiv.appendChild(i);
+            }
         }
 
         this.init();
