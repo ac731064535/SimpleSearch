@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title2</title>
+    <style>
+        div.console_con{
+
+        }
+        div.carousel_div{
+        	position: relative;
+        	/*text-align: right;*/
+        	height: 200px;
+        	width: 200px;
+        	/*width: 20*/
+        	/*background: red;*/
+        }
+        .carousel_div img{
+        	/*position: absolute;*/
+
+        	float: left;
+        }
+    </style>
+</head>
+<body>
+	<!-- <div class="console_con" style="text-align: center"> -->
+	<div class="carousel_div">
+		<img src='image/1.jpg' height=200 width=200>
+		<img src='image/2.jpg' height=200 width=0>
+		<img src='image/3.jpg' height=200 width=0>
+		<img src='image/4.jpg' height=200 width=0>
+		<img src='image/5.jpg' height=200 width=0>
+	</div>
+    <!-- </div> -->
+	<button>tingzhi</button>
+	<script type="text/javascript">
+		var images = document.images;
+		var imgIndex = 0;
+		var div = document.querySelector('div.carousel_div');
+		var button = document.querySelector('button');
+
+		carouseTimer();
+
+		function carouseTimer(){
+			var timer = setInterval(function(){
+				console.log('ctt',imgIndex);
+				carouse(images);
+				imgIndex++;
+			},3000);
+
+			button.addEventListener('click',function(){
+				clearInterval(timer);
+			})
+
+		} 
+
+		function carouse(images){
+			console.log('互换前',images[imgIndex]);
+			//还原第一张的对齐方式
+			if(imgIndex === 0){
+				images[imgIndex].style.float = 'left';
+			}
+			widthSub(images[imgIndex])
+			if(imgIndex === images.length - 1){
+				imgIndex = -1;
+				//由于最后一张转换的时候与前面不一致，所以需要修改第一张的对齐方式。
+				images[imgIndex + 1].style.float = 'right';
+			}
+			widthAdd(images[imgIndex + 1]);
+		}
+
+		function widthAdd(image){
+			console.log('加',image);
+			// div.style.textAlign = 'right';
+			var timerAdd = setInterval(function(){
+				image.width += 1;
+				if(image.width === 200){
+					clearInterval(timerAdd);
+				}
+			},1/1000)
+		}
+
+		function widthSub(image){
+			console.log('减',image);
+			var timerSub = setInterval(function(){
+				image.width -= 1;
+				if(image.width === 0){
+					clearInterval(timerSub);
+				}
+			},1/1000)
+		}
+	</script>
+
+</body>
+</html>
