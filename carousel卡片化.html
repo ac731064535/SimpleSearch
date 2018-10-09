@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title2</title>
+    <style>
+        *{
+    	    margin: 0;
+    	    padding: 0
+        }
+        #container{
+        	height: 200px;
+        	width: 400px;
+        	position: relative;
+        	left: 40%;
+        	border: 3px solid #333;
+        	overflow: hidden;
+        }
+        div.carousel_div{
+        	position: absolute;
+        	width: 1200px;
+        	height: 200px;
+        	display: flex;
+        	align-items: center;
+        }
+        .carousel_div img{
+        	float: left;
+        }
+    </style>
+</head>
+<body>
+	<div id="container">
+	<div class="carousel_div" style="left: 0px">
+		<img src='image/5.jpg' height=100 width=100>
+		<img src='image/1.jpg' height=200 width=200>
+		<img src='image/2.jpg' height=100 width=100>
+		<img src='image/3.jpg' height=100 width=100>
+		<img src='image/4.jpg' height=100 width=100>
+		<img src='image/5.jpg' height=100 width=100>
+		<img src='image/1.jpg' height=100 width=100>
+		<img src='image/2.jpg' height=100 width=100>
+	</div>
+    </div>
+	<button>tingzhi</button>
+	<script type="text/javascript">
+		var containerDiv = document.getElementById("container");
+		var carDiv = document.querySelector('div.carousel_div');
+		var imageList = document.images;
+		var clButton = document.querySelector('button');
+		var offIndex = 1;
+		var divLeft = parseInt(carDiv.style.left);
+		var photoZoomIn = 100,
+		    photoZoomOut = 200;
+
+		//给图片添加索引
+		for(let i = 0; i < imageList.length; i++){
+			imageList[i].index = i;
+		}
+		//定时轮播
+		var timer = setInterval(function(){
+			//当切换到倒数三张时，切换回前三张
+			endToStart();
+			rightOffset(offIndex);
+		},3000)
+
+		//鼠标点击切换上下张
+		carDiv.addEventListener('mouseover',function(){
+			clearInterval(timer);
+		})
+		carDiv.addEventListener('click',function(e){
+			console.log(offIndex,e.target.index);
+
+			var clickIndex = e.target.index;
+			if(clickIndex > offIndex){
+				//当切换到倒数三张时，切换回前三张
+				endToStart();
+				rightOffset(offIndex);
+			}else if(clickIndex < offIndex){
+				//当切换到前三张时，切换到倒数三张
+				startToEnd();
+				leftOffset(offIndex);
+			}
+		})
+		//每次切换的动画,图片整体往左移
+		function rightOffset(offI){
+			var timerr = setInterval(function(){
+				//图片的缩小
+				photoZoomOut -= 1;
+				imageList[offI].width = photoZoomOut;
+				imageList[offI].height =  photoZoomOut;
+
+				//图片的放大
+				photoZoomIn += 1;
+				imageList[offI + 1].width = photoZoomIn;
+				imageList[offI + 1].height = photoZoomIn;
+
+				//偏移量
+				divLeft -= 1;
+				carDiv.style.left = divLeft + 'px';
+
+				if(divLeft === -100*offI){
+					console.log(divLeft);
+					photoZoomIn = 100;
+					photoZoomOut = 200;
+					clearInterval(timerr);
+				}
+			},10);
+
+			offIndex++;
+		}
+		//图片整体往右移
+		function leftOffset(offI){
+			var timerl = setInterval(function(){
+				//图片缩小
+				photoZoomOut -= 1;
+				imageList[offI].width = photoZoomOut;
+				imageList[offI].height =  photoZoomOut;
+
+				//图片的放大
+				photoZoomIn += 1;
+				imageList[offI - 1].width = photoZoomIn;
+				imageList[offI - 1].height = photoZoomIn;
+
+				//偏移量
+				divLeft += 1;
+				carDiv.style.left = divLeft + 'px';
+
+				if(divLeft === -100*(offI - 2)){
+					console.log(offI);
+					photoZoomIn = 100;
+					photoZoomOut = 200;
+					clearInterval(timerl);
+				}
+
+			},10);
+
+			offIndex--;
+		}
+		//当轮播到倒数三张且继续向左<偏移时，切换回前三张
+		function endToStart(){
+			if(offIndex === imageList.length - 2){
+				imageList[1].width = 200;
+				imageList[1].height = 200;
+				imageList[offIndex].width = 100;
+				imageList[offIndex].height = 100;
+				divLeft = 0;
+				offIndex = 1;
+				console.log(imageList[offIndex]);
+				carDiv.style.left = 0 + 'px';
+			}
+		}
+		//当轮播到前三张且继续向右>偏移时，切换到倒数三张。
+		function startToEnd(){
+			if(offIndex === 1){
+				imageList[imageList.length - 2].width = 200;
+				imageList[imageList.length - 2].height = 200;
+				imageList[1].width = 100;
+				imageList[1].height = 100;
+				divLeft = -100*(imageList.length - 3);
+				offIndex = imageList.length - 2;
+				carDiv.style.left = divLeft + 'px';
+			}
+		}
+		//
+		clButton.addEventListener('click',function(){
+			clearInterval(timer);
+		})
+ 	</script>
+</body>
+</html>
