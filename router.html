@@ -17,7 +17,7 @@
 			routes: {},
 			currentUrl: '',
 			setOptions: function(gotMode){
-				this.options.mode = gotMode.mode;
+				this.options.mode = gotMode.mode || 'hash';
 			},
 			//1.当点击浏览器的‘前进’或‘后退’时，两种方式所发生的事件
 			init: function(){
@@ -41,7 +41,7 @@
 			go: function(url){
 				if(this.options.mode === 'hash'){
 					location.hash = '#' + url;//hash的映射方式
-					this.onUrlChange();
+					// this.onUrlChange(); //这个也会触发hashchange事件，所以不用调用
 				}else{
 					history.pushState({},'',url);//pushstate的映射方式
 					this.onUrlChange();
@@ -67,7 +67,7 @@
 		},false);
 
 		router.setOptions({
-			mode: "hash"
+			// mode: "hash"
 		});
 
 		router.route("/", function(){
