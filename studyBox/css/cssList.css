@@ -1,0 +1,57 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+/*自动填充输入框*/
+.div-autoComplete{
+    text-align: center;
+    position: relative;
+}
+.input-autoComplete{
+    width:300px;
+}
+.ul-autoComplete{
+    margin-top:0;
+    margin-right:29%;
+    border: darkgray solid thin;
+    padding: 0;
+    position: absolute;
+}
+.li-autoComplete{
+    list-style-type:none;
+    padding-left:8px;
+}
+.selected{
+    background:#f0f0f0;
+}
+.unselect{
+    background:#fff0f0;
+}
+
+/*tab选项卡*/
+.div-tabList{
+    width: 15%;
+    height: 100%;
+    border: solid red;
+    display: inline-block;
+    vertical-align: top
+}
+.div-tabContent{
+    width: 83%;
+    height: 100%;
+    border: solid green;
+    display: inline-block;
+}
+
+/*地址级联选择器*/
+.div-lcCascade{
+    position: relative;
+}
+.div-lcList{
+    position: relative;
+    display: inline;
+}
+.div-selectedLc{
+    position: absolute;
+    left: 20%;
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+	<link rel="stylesheet" type="text/css" href="./css/cssList.css">
+    <script src="main.js"></script>
+    <script src="./js/spaRouter.js"></script>
+	<script src="./js/autoComplete.js"></script>
+	<script src="./js/tabOption.js"></script>
+	<script src="./js/location.js"></script>
+	<script src="./js/lcCascade.js"></script>
+</head>
+<body>
+	<ul>
+		<li><a href="/">回到首页</a></li>
+		<li><a href="/autoComplete">自动填充输入框</a></li>
+        <li><a href="/tabOption">tab选项卡</a></li>
+		<li><a href="/lcCascade">地址级联选择器</a></li>
+	</ul>
+	<div class="container">
+		<div class="div-autoComplete">
+			<input class="input-autoComplete" type="text">
+		</div>
+		<div class="div-tabOption">
+			<div class="div-tabList">
+				<div>tab1</div>
+				<div>tab2</div>
+				<div>tab3</div>
+			</div>
+			<div class="div-tabContent">
+				<div>content1</div>
+				<div>content2</div>
+				<div>content3</div>
+			</div>
+		</div>
+		<div class="div-lcCascade">
+			<div class="div-lcList"></div>
+			<div><button id="commit">提交</button></div>
+			<div class="div-selectedLc"><h2>选择过的地址</h2></div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		console.log(llocation[0]);
+	</script>
+</body>
+</html>

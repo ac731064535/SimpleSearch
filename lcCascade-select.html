@@ -17,29 +17,34 @@
         	left: 20%;
         	display: inline-block;
         }
-        i{
+  /*      i{
         	display: block;
-        }
+        }*/
     </style>
 </head>
 <body>
 	<div class="cascader"></div>
-    <div><button id="commit">提交</button></div>
+    <button id="commit">提交</button>
 	<div class="selectedL"><h2>选择过的地址</h2></div>
 <script type="text/javascript" src="location.js"></script>
 <script>
 	var llocation = llocation;
 	var defaultLocation = ['广东省','广州市','天河区'];
-	var button = document.getElementById('commit');
+	// var button = document.getElementById('commit');
 	var selectDiv = document.querySelector('div.selectedL');
 
-	var lcc = new LcCascader('div.cascader',llocation,defaultLocation);
-
-	function LcCascader(div,data,defaultLocation) {
+	// var lcc = new LcCascader('div.cascader',llocation,defaultLocation);
+    var option = {
+        lcList: 'div.cascader',
+        data: llocation,
+        defaultLocation: defaultLocation
+    }
+    new LcCascader(option);
+	function LcCascader(option) {
         var _this = this;
-        this.data = data;
+        this.data = option.data;
         //要注意把nodelist换成节点
-        this.div = document.querySelectorAll(div)[0];
+        this.div = document.querySelectorAll(option.lcList)[0];
 
         this.selectList = this.div.getElementsByTagName('select');
 
@@ -47,7 +52,7 @@
 
         this.init = function(){
         	//添加一个默认参数调用函数，当发生点击事件时，把默认参数去掉再调用
-        	this.selectLocation(0,data,defaultLocation);
+        	this.selectLocation(0,this.data,option.defaultLocation);
         	// this.selectLocation(0,data);
         }
         this.selectLocation = function(selectIndex,data,defaultLocation){
